@@ -9,6 +9,7 @@ The service maintains a model of author attributions to works.
 2. Download code from GitHub and build
 
     git clone https://github.com/richardrodgers/idsvc.git
+    
     mvn clean package
 
 3. Database Setup
