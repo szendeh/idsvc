@@ -4,12 +4,12 @@ The service maintains a model of author attributions to works.
 
 ### Installing and running the service ###
 
-1. Prerequisites: Java7 SDK, Git, Maven, PostgreSQL
+1. Prerequisites: Java7 SDK, Git, Maven (build), PostgreSQL (run)
 
 2. Download code from GitHub and build
 
     git clone https://github.com/richardrodgers/idsvc.git
-    
+
     mvn clean package
 
 3. Database Setup
