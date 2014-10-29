@@ -1,4 +1,4 @@
-## Identifier Data Web Service ##
+## Identity Data Web Service ##
 
 The service maintains a model of author attributions to works.
 
