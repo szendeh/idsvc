@@ -113,7 +113,6 @@ public class ClaimResource {
     @DELETE
     public Response retract(@PathParam("personId") String personId, @QueryParam("wid") String wid) {
         // For now, only identifier we recognize is MIT ID
-        System.out.println("Got personId: " + personId + " wid: " + wid);
         Identifier identifier = identifierDao.findByIdentifier("mitid", personId);
         if (identifier != null) {
             Work work = workDao.findByRef("cnri", wid);
