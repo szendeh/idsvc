@@ -4,13 +4,16 @@
  */
 package edu.mit.lib.idsvc.resources;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import edu.mit.lib.idsvc.api.Person;
@@ -54,6 +57,17 @@ public class PersonResource {
             // look up associated identifiers, names and works
             return new PersonGraph(person, personDao.namesFor(person.getId()),
                                    personDao.identifiersFor(person.getId()), personDao.worksBy(person.getId()));
+        }
+        throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    @PUT @Path("{personId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updatePerson(@PathParam("personId") int personId, Person person) {
+        Person theperson = personDao.findById(personId);
+        if (theperson != null) {
+            personDao.update(personId, person.getLabel());
+            return Response.ok().build();
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }

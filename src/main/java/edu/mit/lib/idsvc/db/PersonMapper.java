@@ -22,6 +22,6 @@ public class PersonMapper implements ResultSetMapper<Person>  {
 
     @Override
     public Person map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-        return new Person(r.getInt("id"));
+        return new Person(r.getInt("id"), r.getString("label"));
     }
 }

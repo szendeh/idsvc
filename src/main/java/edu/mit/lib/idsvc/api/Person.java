@@ -15,13 +15,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Person {
 
     private int id;
+    private String label;
+
+    public Person() {}
 
     public Person(int id) {
         this.id = id;
     }
 
+    public Person(int id, String label) {
+        this.id = id;
+        this.label = label;
+    }
+
     @JsonProperty
     public int getId() {
         return id;
+    }
+
+    @JsonProperty
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @JsonProperty
+    public String getLabel() {
+        return label;
+    }
+
+    @JsonProperty
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

@@ -38,6 +38,9 @@ public interface PersonDAO {
     @GetGeneratedKeys
     int create(@Bind("created") Timestamp created);
 
+    @SqlUpdate("update person set label = :label where id = :id")
+    int update(@Bind("id") int id, @Bind("label") String label);
+
     @SqlUpdate("delete from person where id = :id")
     void remove(@Bind("id") int id);
 

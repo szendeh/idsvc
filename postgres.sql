@@ -2,6 +2,7 @@
 -- Person table
 CREATE TABLE person (
     id SERIAL PRIMARY KEY,
+    label VARCHAR(128),
     created TIMESTAMP
 );
 -- Pident (personal identifier) table
