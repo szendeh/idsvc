@@ -30,8 +30,8 @@ The service produces JSON output and expects JSON input.
 
 #### Updates ####
 
-The service exposes only one resource type ('claim') for updating the model.
-A PUT to the URL (example data):
+The service exposes only two resource types for updating the model.
+The first is a 'claim'. A PUT to a claim URL (example data):
     
     http://example.com:8080/claim/900058367?wid=1721.1/69157
 
@@ -51,10 +51,24 @@ A curl invocation of this (where above JSON is in 'claim.js'):
 Affirming a claim simply means that the occurance of the name literal in the context of the given work (CNRI handle assumed for now) will
 be understood to refer to the person uniquely identified by the given identifier (MIT ID schema assumed for now).
 
+The other resource type is the person, and the only update possible is to assign a label to a person.
+A PUT to a person URL like:
+
+    http://example.com:8080/person/1
+
+with a JSON entity:
+
+    {
+        "id": 1,
+        "label": "Solh Zendeh"
+    }
+
+will attach a label to the person.
+
 #### Access ####
 
 Access to the model is performed via GET requests to 3 entity types: 'person', 'work' and 'name'.
-Each type my be requested *either* by ID (i.e. db key), or by a _reference_. For example, the URL:
+Each type may be requested *either* by ID (i.e. db key), or by a _reference_. For example, the URL:
 
     http://example.com:8080/person/1
 
