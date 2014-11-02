@@ -41,7 +41,8 @@ A claim PUT must contain as the resource representation, a JSON object like this
     {
         "work": "1721.1/69157",
         "identifier": "900058367",
-        "name": "Richard Rodgers"
+        "name": "Richard Rodgers",
+        "source": "dwh-match"
     }
 
 A curl invocation of this (where above JSON is in 'claim.js'):

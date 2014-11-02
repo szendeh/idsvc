@@ -4,6 +4,9 @@
  */
 package edu.mit.lib.idsvc.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,8 +19,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import edu.mit.lib.idsvc.api.Identifier;
+import edu.mit.lib.idsvc.api.Name;
 import edu.mit.lib.idsvc.api.Person;
 import edu.mit.lib.idsvc.api.PersonGraph;
+import edu.mit.lib.idsvc.api.Work;
+import edu.mit.lib.idsvc.db.ClaimDAO;
+import edu.mit.lib.idsvc.db.IdentifierDAO;
 import edu.mit.lib.idsvc.db.PersonDAO;
 
 /**
@@ -32,9 +40,13 @@ import edu.mit.lib.idsvc.db.PersonDAO;
 public class PersonResource {
 
     private final PersonDAO personDao;
+    private final IdentifierDAO identifierDao;
+    private final ClaimDAO claimDao;
 
-    public PersonResource(PersonDAO personDao) {
+    public PersonResource(PersonDAO personDao, IdentifierDAO identifierDao, ClaimDAO claimDao) {
         this.personDao = personDao;
+        this.identifierDao = identifierDao;
+        this.claimDao = claimDao;
     }
 
     @GET @Path("{personId}")
@@ -43,8 +55,8 @@ public class PersonResource {
         Person person = personDao.findById(personId);
         if (person != null) {
             // look up associated identifiers, names and works
-            return new PersonGraph(person, personDao.namesFor(personId),
-                                   personDao.identifiersFor(personId), personDao.worksBy(personId));
+            return new PersonGraph(person, claimedNames(personId),
+                                   identifierDao.identifiersFor(personId), claimedWorks(personId));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -55,8 +67,8 @@ public class PersonResource {
         Person person = personDao.findByRef(schema, ref);
         if (person != null) {
             // look up associated identifiers, names and works
-            return new PersonGraph(person, personDao.namesFor(person.getId()),
-                                   personDao.identifiersFor(person.getId()), personDao.worksBy(person.getId()));
+            return new PersonGraph(person, claimedNames(person.getId()),
+                                   identifierDao.identifiersFor(person.getId()), claimedWorks(person.getId()));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -70,5 +82,21 @@ public class PersonResource {
             return Response.ok().build();
         }
         throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    private List<Name> claimedNames(int personId) {
+        List<Name> nameList = new ArrayList<>();
+        for (Identifier pid : identifierDao.identifiersFor(personId)) {
+             nameList.addAll(claimDao.namesFor(pid.getId()));
+        }
+        return nameList;
+    }
+
+    private List<Work> claimedWorks(int personId) {
+        List<Work> workList = new ArrayList<>();
+        for (Identifier pid : identifierDao.identifiersFor(personId)) {
+             workList.addAll(claimDao.worksBy(pid.getId()));
+        }
+        return workList;
     }
 }

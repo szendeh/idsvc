@@ -4,12 +4,6 @@
  */
 package edu.mit.lib.idsvc.api;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -24,13 +18,15 @@ public class Claim {
     private String work;
     private String identifier;
     private String name;
+    private String source;
 
     public Claim() {}
 
-    public Claim(String work, String identifier, String name) {
+    public Claim(String identifier, String work, String name, String source) {
         this.work = work;
         this.identifier = identifier;
         this.name = name;
+        this.source = source;
     }
 
     @JsonProperty
@@ -61,5 +57,15 @@ public class Claim {
     @JsonProperty
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonProperty
+    public String getSource() {
+        return source;
+    }
+
+    @JsonProperty
+    public void setSource(String source) {
+        this.source = source;
     }
 }

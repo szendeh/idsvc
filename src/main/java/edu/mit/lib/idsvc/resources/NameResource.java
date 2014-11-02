@@ -4,6 +4,9 @@
  */
 package edu.mit.lib.idsvc.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -13,9 +16,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import edu.mit.lib.idsvc.api.Identifier;
 import edu.mit.lib.idsvc.api.Name;
+import edu.mit.lib.idsvc.api.Person;
 import edu.mit.lib.idsvc.api.NameGraph;
+import edu.mit.lib.idsvc.db.ClaimDAO;
 import edu.mit.lib.idsvc.db.NameDAO;
+import edu.mit.lib.idsvc.db.PersonDAO;
 
 /**
  * Resource class for personal names. An Http GET
@@ -30,9 +37,13 @@ import edu.mit.lib.idsvc.db.NameDAO;
 public class NameResource {
 
     private final NameDAO nameDao;
+    private final PersonDAO personDao;
+    private final ClaimDAO claimDao;
 
-    public NameResource(NameDAO nameDao) {
+    public NameResource(NameDAO nameDao, PersonDAO personDao, ClaimDAO claimDao) {
         this.nameDao = nameDao;
+        this.personDao = personDao;
+        this.claimDao = claimDao;
     }
 
     @GET @Path("{nameId}")
@@ -41,7 +52,7 @@ public class NameResource {
         Name name = nameDao.findById(nameId);
         if (name != null) {
             // look up associated persons and works
-            return new NameGraph(name, nameDao.personsWithName(name.getId()), nameDao.worksWithName(name.getId()));
+            return new NameGraph(name, personsNamed(name.getId()), claimDao.worksWithName(name.getId()));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -52,8 +63,16 @@ public class NameResource {
         Name name = nameDao.findByName(ref);
         if (name != null) {
             // look up associated persons and works
-            return new NameGraph(name, nameDao.personsWithName(name.getId()), nameDao.worksWithName(name.getId()));
+            return new NameGraph(name, personsNamed(name.getId()), claimDao.worksWithName(name.getId()));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    private List<Person> personsNamed(int nameId) {
+        List<Person> personList = new ArrayList<>();
+        for (Identifier pid: claimDao.authorsNamed(nameId)) {
+            personList.add(personDao.findById(pid.getPersonId()));
+        }
+        return personList;
     }
 }

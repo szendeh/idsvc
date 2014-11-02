@@ -23,21 +23,12 @@ CREATE TABLE pname (
     id SERIAL PRIMARY KEY,
     pname VARCHAR(128) NOT NULL
 );
--- Person-Work join table
-CREATE TABLE personworks (
+-- Claim table
+CREATE TABLE claim (
     id SERIAL PRIMARY KEY,
-    person_id INT REFERENCES person(id),
-    work_id INT REFERENCES work(id)
-);
--- Person-Pname join table
-CREATE TABLE personpnames (
-    id SERIAL PRIMARY KEY,
-    person_id INT REFERENCES person(id),
-    pname_id INT REFERENCES pname(id)
-);
--- Work-Pname join table
-CREATE TABLE workpnames (
-    id SERIAL PRIMARY KEY,
+    created TIMESTAMP,
+    source VARCHAR(12),
+    pident_id INT REFERENCES pident(id),
     work_id INT REFERENCES work(id),
     pname_id INT REFERENCES pname(id)
 );

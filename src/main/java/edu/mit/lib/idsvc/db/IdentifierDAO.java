@@ -4,9 +4,10 @@
  */
 package edu.mit.lib.idsvc.db;
 
-//import java.util.List;
+import java.util.List;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.customizers.Mapper;
@@ -31,12 +32,13 @@ public interface IdentifierDAO {
 
     @SqlQuery("select * from pident where person_id = :pid")
     @Mapper(IdentifierMapper.class)
-    Identifier findByPersonId(@Bind("pid") int pid);
+    List<Identifier> identifiersFor(@Bind("pid") int pid);
 
     @SqlUpdate("delete from pident where person_id = :pid")
     void removeIdentifiersOf(@Bind("pid") int pid);
 
     @SqlUpdate("insert into pident (person_id, schema, identifier) values (:pid, :schema, :ident)")
-    void create(@Bind("pid") int pid, @Bind("schema") String schema, @Bind("ident") String ident);
+    @GetGeneratedKeys
+    int create(@Bind("pid") int pid, @Bind("schema") String schema, @Bind("ident") String ident);
 
 }

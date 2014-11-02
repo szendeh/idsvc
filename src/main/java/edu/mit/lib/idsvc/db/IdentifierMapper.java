@@ -13,7 +13,7 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import edu.mit.lib.idsvc.api.Identifier;
 
 /**
- * DAO for Identifier objects
+ * Mapper for Identifier objects
  * 
  * @author richardrodgers
  */

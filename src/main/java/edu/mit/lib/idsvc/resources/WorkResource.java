@@ -4,6 +4,9 @@
  */
 package edu.mit.lib.idsvc.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -13,8 +16,12 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import edu.mit.lib.idsvc.api.Identifier;
+import edu.mit.lib.idsvc.api.Person;
 import edu.mit.lib.idsvc.api.Work;
 import edu.mit.lib.idsvc.api.WorkGraph;
+import edu.mit.lib.idsvc.db.ClaimDAO;
+import edu.mit.lib.idsvc.db.PersonDAO;
 import edu.mit.lib.idsvc.db.WorkDAO;
 
 /**
@@ -28,9 +35,13 @@ import edu.mit.lib.idsvc.db.WorkDAO;
 public class WorkResource {
 
     private final WorkDAO workDao;
+    private final PersonDAO personDao;
+    private final ClaimDAO claimDao;
 
-    public WorkResource(WorkDAO workDao) {
+    public WorkResource(WorkDAO workDao, PersonDAO personDao, ClaimDAO claimDao) {
         this.workDao = workDao;
+        this.personDao = personDao;
+        this.claimDao = claimDao;
     }
 
     @GET @Path("{workId}")
@@ -39,7 +50,7 @@ public class WorkResource {
         Work work = workDao.findById(workId);
         if (work != null) {
             // look up associated identifiers and names
-            return new WorkGraph(work, workDao.authorsOf(work.getId()), workDao.namesIn(work.getId()));
+            return new WorkGraph(work, authorsOf(work.getId()), claimDao.namesIn(work.getId()));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -50,8 +61,16 @@ public class WorkResource {
         Work work = workDao.findByRef(schema, ref);
         if (work != null) {
             // look up associated identifiers and names
-            return new WorkGraph(work, workDao.authorsOf(work.getId()), workDao.namesIn(work.getId()));
+            return new WorkGraph(work, authorsOf(work.getId()), claimDao.namesIn(work.getId()));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    private List<Person> authorsOf(int workId) {
+        List<Person> personList = new ArrayList<>();
+        for (Identifier pid: claimDao.authorsOf(workId)) {
+            personList.add(personDao.findById(pid.getPersonId()));
+        }
+        return personList;
     }
 }
