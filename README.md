@@ -32,7 +32,7 @@ The service produces JSON output and expects JSON input.
 
 The service exposes only two resource types for updating the model.
 The first is a 'claim'. A PUT to a claim URL (example data):
-    
+
     http://example.com:8080/claim/900058367?wid=1721.1/69157
 
 will 'make' or affirm a claim, whereas a DELETE to the same URL will 'retract' the claim.
@@ -103,14 +103,19 @@ is replaced with the string 'literal':
 
 Note that names have to be URL-encoded, since they typically contain spaces.
 
+### Reconciliation ###
+
+The service also exposes an endpoint URL:
+
+    http://example.com/reconcile/name?queries={json queries object}
+
+which implements the GoogleRefine/OpenRefine reconciliation API for name literals. Currently,
+matches are scored by the number of authored works each distinct identity has in the claim model.
+
 ### Representations ###
 
 For persons, works and names, the returned resource representation is actually a sub-graph of the model
 maintained by the service. For persons, the sub-graph contains all works authored by person, all names
-the person has been claimed under, and all personal identifiers associated with the person. For works, the 
+the person has been claimed under, and all personal identifiers associated with the person. For works, the
 sub-graph contains all authors (persons) and all names associated with the work. Finally for names, the
 sub-graph contains all works the names appear in and all persons who have that name.
-
-
-
-

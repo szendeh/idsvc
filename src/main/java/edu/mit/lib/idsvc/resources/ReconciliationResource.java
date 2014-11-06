@@ -63,8 +63,8 @@ public class ReconciliationResource {
             }
             return Response.ok().entity(resultSet).build();
         } catch (Exception e) {
-            System.out.println("Ouch: " + e.getMessage());
-            e.printStackTrace();
+            //System.out.println("Ouch: " + e.getMessage());
+            //e.printStackTrace();
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
