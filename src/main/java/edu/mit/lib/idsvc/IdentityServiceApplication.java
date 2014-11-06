@@ -19,6 +19,7 @@ import edu.mit.lib.idsvc.db.WorkDAO;
 import edu.mit.lib.idsvc.resources.ClaimResource;
 import edu.mit.lib.idsvc.resources.NameResource;
 import edu.mit.lib.idsvc.resources.PersonResource;
+import edu.mit.lib.idsvc.resources.ReconciliationResource;
 import edu.mit.lib.idsvc.resources.WorkResource;
 
 public class IdentityServiceApplication extends Application<IdentityServiceConfiguration> {
@@ -45,5 +46,6 @@ public class IdentityServiceApplication extends Application<IdentityServiceConfi
         environment.jersey().register(new NameResource(nameDao, personDao, claimDao));
         environment.jersey().register(new PersonResource(personDao, identifierDao, claimDao));
         environment.jersey().register(new WorkResource(workDao, personDao, claimDao));
+        environment.jersey().register(new ReconciliationResource(nameDao, claimDao));
     }
 }
