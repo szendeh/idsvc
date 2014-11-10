@@ -88,7 +88,7 @@ public class ClaimResource {
             }
             claimDao.create(timestamp, claim.getSource(), identifier.getId(), work.getId(), name.getId());
         }
-        return Response.ok().build();
+        return Response.ok().header("Access-Control-Allow-Origin", "*").build();
     }
 
     @DELETE
@@ -119,7 +119,7 @@ public class ClaimResource {
                     if (claimDao.numClaimsNaming(claim.getPnameId()) == 0) {
                         nameDao.remove(claim.getPnameId());
                     }
-                    return Response.ok().build();
+                    return Response.ok().header("Access-Control-Allow-Origin", "*").build();
                 }
             }
         }
