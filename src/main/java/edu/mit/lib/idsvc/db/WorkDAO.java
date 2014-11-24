@@ -4,6 +4,8 @@
  */
 package edu.mit.lib.idsvc.db;
 
+import java.sql.Timestamp;
+
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.GetGeneratedKeys;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
@@ -24,13 +26,13 @@ public interface WorkDAO {
     @Mapper(WorkMapper.class)
     Work findById(@Bind("id") int id);
 
-    @SqlQuery("select * from work where schema = :schema and identifier = :ident")
+    @SqlQuery("select work.* from work, wident where work.id = wident.work_id and wident.schema = :schema and wident.identifier = :ref")
     @Mapper(WorkMapper.class)
-    Work findByRef(@Bind("schema") String schema, @Bind("ident") String ident);
+    Work findByRef(@Bind("schema") String schema, @Bind("ref") String ref);
 
-    @SqlUpdate("insert into work (schema, identifier) values (:schema, :ident)")
+    @SqlUpdate("insert into work (created) values (:created)")
     @GetGeneratedKeys
-    int create(@Bind("schema") String schema, @Bind("ident") String ident);
+    int create(@Bind("created") Timestamp created);
 
     @SqlUpdate("delete from work where id = :id")
     void remove(@Bind("id") int id);

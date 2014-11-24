@@ -22,6 +22,6 @@ public class ClaimMapper implements ResultSetMapper<ResolvedClaim>  {
 
     @Override
     public ResolvedClaim map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-        return new ResolvedClaim(r.getInt("id"), r.getString("source"), r.getInt("pident_id"), r.getInt("work_id"), r.getInt("pname_id"));
+        return new ResolvedClaim(r.getInt("id"), r.getString("source"), r.getInt("pident_id"), r.getInt("wident_id"), r.getInt("pname_id"));
     }
 }

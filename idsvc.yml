@@ -3,10 +3,10 @@ database:
   driverClass: org.postgresql.Driver
 
   # the username
-  user: postgres
+  user: szendeh 
 
   # the password
-  password: password
+  password: 
 
   # the JDBC URL
   url: jdbc:postgresql://localhost:5432/idsvc

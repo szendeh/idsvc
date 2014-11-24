@@ -16,27 +16,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Work {
 
     private int id;
-    private String schema;
-    private String identifier;
 
-    public Work(int id, String schema, String identifier) {
+    public Work(int id) {
         this.id = id;
-        this.schema = schema;
-        this.identifier = identifier;
     }
 
     @JsonProperty
     public int getId() {
         return id;
-    }
-
-    @JsonProperty
-    public String getSchema() {
-        return schema;
-    }
-
-    @JsonProperty
-    public String getIdentifier() {
-        return identifier;
     }
 }

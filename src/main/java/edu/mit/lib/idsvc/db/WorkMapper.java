@@ -22,6 +22,6 @@ public class WorkMapper implements ResultSetMapper<Work>  {
 
     @Override
     public Work map(int index, ResultSet r, StatementContext ctx) throws SQLException {
-        return new Work(r.getInt("id"), r.getString("schema"), r.getString("identifier"));
+        return new Work(r.getInt("id"));
     }
 }

@@ -15,6 +15,12 @@ CREATE TABLE pident (
 -- Work table
 CREATE TABLE work (
     id SERIAL PRIMARY KEY,
+    created TIMESTAMP
+);
+-- Wident (work identifier) table
+CREATE TABLE wident (
+    id SERIAL PRIMARY KEY,
+    work_id INT REFERENCES work(id),
     schema VARCHAR(12) NOT NULL,
     identifier VARCHAR(128) NOT NULL
 );
@@ -29,6 +35,6 @@ CREATE TABLE claim (
     created TIMESTAMP,
     source VARCHAR(12),
     pident_id INT REFERENCES pident(id),
-    work_id INT REFERENCES work(id),
+    wident_id INT REFERENCES wident(id),
     pname_id INT REFERENCES pname(id)
 );

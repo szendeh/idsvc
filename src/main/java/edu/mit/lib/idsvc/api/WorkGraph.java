@@ -19,11 +19,13 @@ public class WorkGraph {
 
     private Work work;
     private List<Person> authors;
+    private List<WorkIdentifier> identifiers;
     private List<Name> names;
 
-    public WorkGraph(Work work, List<Person> authors, List<Name> names) {
+    public WorkGraph(Work work, List<Person> authors, List<WorkIdentifier> identifiers, List<Name> names) {
         this.work = work;
         this.authors = authors;
+        this.identifiers = identifiers;
         this.names = names;
     }
 
@@ -33,12 +35,17 @@ public class WorkGraph {
     }
 
     @JsonProperty
-    public List<Name> getNames() {
-        return names;
+    public List<Person> getAuthors() {
+        return authors;
     }
 
     @JsonProperty
-    public List<Person> getAuthors() {
-        return authors;
+    public List<WorkIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
+    @JsonProperty
+    public List<Name> getNames() {
+        return names;
     }
 }

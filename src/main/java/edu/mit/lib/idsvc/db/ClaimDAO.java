@@ -17,6 +17,7 @@ import edu.mit.lib.idsvc.api.Identifier;
 import edu.mit.lib.idsvc.api.Name;
 import edu.mit.lib.idsvc.api.ResolvedClaim;
 import edu.mit.lib.idsvc.api.Work;
+import edu.mit.lib.idsvc.api.WorkIdentifier;
 
 /**
  * DAO for resolved Claims
@@ -30,18 +31,25 @@ public interface ClaimDAO {
     @Mapper(ClaimMapper.class)
     ResolvedClaim findById(@Bind("id") int id);
 
-    @SqlQuery("select * from claim where pident_id = :pid and work_id = :wid")
+    @SqlQuery("select * from claim where pident_id = :pid and wident_id = :wid")
     @Mapper(ClaimMapper.class)
     ResolvedClaim findByRefs(@Bind("pid") int pid, @Bind("wid") int wid);
 
-    @SqlUpdate("insert into claim (created, source, pident_id, work_id, pname_id) values (:created, :source, :pid, :wid, :nid)")
+    /* NOTE this assumes only using mitid schema
+     * will need to revise to work with different schemas
+     */
+    @SqlQuery("SELECT claim.* FROM claim, pident, wident  WHERE claim.pident_id=pident.id AND pident.identifier=:personId AND claim.wident_id=wident.id AND wident.identifier=:work_identifier")
+    @Mapper(ClaimMapper.class)
+    ResolvedClaim findByPersonIdAndWorkIdentifier(@Bind("personId") String personId, @Bind("work_identifier") String work_identifier);
+
+    @SqlUpdate("insert into claim (created, source, pident_id, wident_id, pname_id) values (:created, :source, :pid, :wident_id, :nid)")
     @GetGeneratedKeys
-    int create(@Bind("created") Timestamp created, @Bind("source") String source, @Bind("pid") int pid, @Bind("wid") int wid, @Bind("nid") int nid);
+    int create(@Bind("created") Timestamp created, @Bind("source") String source, @Bind("pid") int pid, @Bind("wident_id") int wident_id, @Bind("nid") int nid);
 
     @SqlUpdate("delete from claim where id = :id")
     void remove(@Bind("id") int id);
 
-    @SqlQuery("select work.* from work, claim where work.id = claim.work_id and claim.pident_id = :pid")
+    @SqlQuery("SELECT work.* FROM work, wident, claim WHERE work.id = wident.work_id AND wident.id = claim.wident_id AND claim.pident_id = :pid")
     @Mapper(WorkMapper.class)
     List<Work> worksBy(@Bind("pid") int pid);
 
@@ -55,11 +63,15 @@ public interface ClaimDAO {
 
     @SqlQuery("select pname.* from pname, claim where pname.id = claim.pname_id and claim.work_id = :wid")
     @Mapper(NameMapper.class)
-    List<Name> namesIn(@Bind("wid") int wid); 
+    List<Name> namesIn(@Bind("wid") int wid);
 
-    @SqlQuery("select work.* from work, claim where work.id = claim.work_id and claim.pname_id = :nid")
-    @Mapper(WorkMapper.class)
-    List<Work> worksWithName(@Bind("nid") int nid);
+    @SqlQuery("select wident.* from wident, claim where wident.id = claim.wident_id and claim.pname_id = :nid")
+    @Mapper(WorkIdentifierMapper.class)
+    List<WorkIdentifier> worksWithName(@Bind("nid") int nid);
+
+    // @SqlQuery("select work.* from work, claim where work.id = claim.work_id and claim.pname_id = :nid")
+    // @Mapper(WorkMapper.class)
+    // List<Work> worksWithName(@Bind("nid") int nid);
 
     @SqlQuery("select pname.* from pname, claim where pname.id = claim.pname_id and claim.pident_id = :pid")
     @Mapper(NameMapper.class)

@@ -18,16 +18,16 @@ public class ResolvedClaim {
     private int id;
     private String source;
     private int pidentId;
-    private int workId;
+    private int widentId;
     private int pnameId;
 
     public ResolvedClaim() {}
 
-    public ResolvedClaim(int id, String source, int pidentId, int workId, int pnameId) {
+    public ResolvedClaim(int id, String source, int pidentId, int widentId, int pnameId) {
         this.id = id;
         this.source = source;
         this.pidentId = pidentId;
-        this.workId = workId;
+        this.widentId = widentId;
         this.pnameId = pnameId;
     }
 
@@ -40,11 +40,11 @@ public class ResolvedClaim {
     }
 
     public int getPidentId() {
-        return pnameId;
+        return pidentId;
     }
 
-    public int getWorkId() {
-        return pnameId;
+    public int getWidentId() {
+        return widentId;
     }
 
     public int getPnameId() {

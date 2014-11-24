@@ -14,29 +14,40 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 
 public class Claim {
-
-    private String work;
     private String identifier;
     private String name;
     private String source;
+    private String work_identifier;
+    private String work_schema;
 
     public Claim() {}
 
-    public Claim(String identifier, String work, String name, String source) {
-        this.work = work;
+    public Claim(String identifier, String name, String source, String work_identifier, String work_schema) {
         this.identifier = identifier;
         this.name = name;
         this.source = source;
+        this.work_identifier = work_identifier;
+        this.work_schema = work_schema;
     }
 
     @JsonProperty
-    public String getWork() {
-        return work;
+    public String getWork_identifier() {
+        return work_identifier;
     }
 
     @JsonProperty
-    public void setWork(String work) {
-        this.work = work;
+    public void setWork_identifier(String work_identifier) {
+        this.work_identifier = work_identifier;
+    }
+
+    @JsonProperty
+    public String getWork_schema() {
+        return work_schema;
+    }
+
+    @JsonProperty
+    public void setWork_schema(String work_schema) {
+        this.work_schema = work_schema;
     }
 
     @JsonProperty

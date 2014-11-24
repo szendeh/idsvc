@@ -20,9 +20,11 @@ import edu.mit.lib.idsvc.api.Identifier;
 import edu.mit.lib.idsvc.api.Person;
 import edu.mit.lib.idsvc.api.Work;
 import edu.mit.lib.idsvc.api.WorkGraph;
+import edu.mit.lib.idsvc.api.WorkIdentifier;
 import edu.mit.lib.idsvc.db.ClaimDAO;
 import edu.mit.lib.idsvc.db.PersonDAO;
 import edu.mit.lib.idsvc.db.WorkDAO;
+import edu.mit.lib.idsvc.db.WorkIdentifierDAO;
 
 /**
  * Resource class for works - primary type of which is DSpace Items 
@@ -35,11 +37,13 @@ import edu.mit.lib.idsvc.db.WorkDAO;
 public class WorkResource {
 
     private final WorkDAO workDao;
+    private final WorkIdentifierDAO workIdentifierDao;
     private final PersonDAO personDao;
     private final ClaimDAO claimDao;
 
-    public WorkResource(WorkDAO workDao, PersonDAO personDao, ClaimDAO claimDao) {
+    public WorkResource(WorkDAO workDao, WorkIdentifierDAO workIdentifierDao, PersonDAO personDao, ClaimDAO claimDao) {
         this.workDao = workDao;
+        this.workIdentifierDao = workIdentifierDao;
         this.personDao = personDao;
         this.claimDao = claimDao;
     }
@@ -49,8 +53,9 @@ public class WorkResource {
         // return graph if work exists
         Work work = workDao.findById(workId);
         if (work != null) {
-            // look up associated identifiers and names
-            return new WorkGraph(work, authorsOf(work.getId()), claimDao.namesIn(work.getId()));
+            // look up associated authors, work_identifiers, and names
+            return new WorkGraph(work, authorsOf(workId),
+                                 workIdentifierDao.identifiersFor(workId), claimDao.namesIn(workId));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -60,8 +65,10 @@ public class WorkResource {
         // return graph if work exists
         Work work = workDao.findByRef(schema, ref);
         if (work != null) {
-            // look up associated identifiers and names
-            return new WorkGraph(work, authorsOf(work.getId()), claimDao.namesIn(work.getId()));
+            int workId = work.getId();
+            // look up associated authors, work_identifiers, and names
+            return new WorkGraph(work, authorsOf(workId),
+                                 workIdentifierDao.identifiersFor(workId), claimDao.namesIn(workId));
         }
         throw new WebApplicationException(Status.NOT_FOUND);
     }

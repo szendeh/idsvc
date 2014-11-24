@@ -9,12 +9,14 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -24,11 +26,13 @@ import edu.mit.lib.idsvc.api.Identifier;
 import edu.mit.lib.idsvc.api.Name;
 import edu.mit.lib.idsvc.api.ResolvedClaim;
 import edu.mit.lib.idsvc.api.Work;
+import edu.mit.lib.idsvc.api.WorkIdentifier;
 import edu.mit.lib.idsvc.db.ClaimDAO;
 import edu.mit.lib.idsvc.db.IdentifierDAO;
 import edu.mit.lib.idsvc.db.NameDAO;
 import edu.mit.lib.idsvc.db.PersonDAO;
 import edu.mit.lib.idsvc.db.WorkDAO;
+import edu.mit.lib.idsvc.db.WorkIdentifierDAO;
 
 /**
  * Resource class for claims - which are the atomic transactional units
@@ -44,19 +48,20 @@ import edu.mit.lib.idsvc.db.WorkDAO;
 @Path("/claim/{personId}")
 @Produces(MediaType.APPLICATION_JSON)
 public class ClaimResource {
-
     private final ClaimDAO claimDao;
     private final PersonDAO personDao;
     private final IdentifierDAO identifierDao;
     private final NameDAO nameDao;
     private final WorkDAO workDao;
+    private final WorkIdentifierDAO workIdentifierDao;
 
-    public ClaimResource(ClaimDAO claimDao, PersonDAO personDao, IdentifierDAO identifierDao, NameDAO nameDao, WorkDAO workDao) {
+    public ClaimResource(ClaimDAO claimDao, PersonDAO personDao, IdentifierDAO identifierDao, NameDAO nameDao, WorkDAO workDao, WorkIdentifierDAO workIdentifierDao) {
         this.claimDao = claimDao;
         this.personDao = personDao;
         this.identifierDao = identifierDao;
         this.nameDao = nameDao;
         this.workDao = workDao;
+        this.workIdentifierDao = workIdentifierDao;
     }
     
     @PUT
@@ -70,15 +75,16 @@ public class ClaimResource {
             int personId = personDao.create(timestamp);
             int identId = identifierDao.create(personId, "mitid", claim.getIdentifier());
             identifier = identifierDao.findById(identId);
-        } 
-        // next up, the work - create if new to model
-        Work work = workDao.findByRef("cnri", claim.getWork());
-        if (work == null) {
-            int workId = workDao.create("cnri", claim.getWork());
-            work = workDao.findById(workId);
+        }
+        // only WorkIdentifier we accept is cnri for now
+        WorkIdentifier workIdentifier = workIdentifierDao.findByIdentifier("cnri", claim.getWork_identifier());
+        if (workIdentifier == null) {
+            int workId = workDao.create(timestamp);
+            int workIdentifierId = workIdentifierDao.create(workId, "cnri", claim.getWork_identifier());
+            workIdentifier = workIdentifierDao.findById(workIdentifierId);
         }
         // OK - determine whether a claim already has been make
-        ResolvedClaim rc = claimDao.findByRefs(identifier.getId(), work.getId());
+        ResolvedClaim rc = claimDao.findByRefs(identifier.getId(), workIdentifier.getId());
         if (rc == null) {
             // create name if new, then record the claim
             Name name = nameDao.findByName(claim.getName());
@@ -86,9 +92,13 @@ public class ClaimResource {
                 int nameId = nameDao.create(claim.getName());
                 name = nameDao.findById(nameId);
             }
-            claimDao.create(timestamp, claim.getSource(), identifier.getId(), work.getId(), name.getId());
+            claimDao.create(timestamp, claim.getSource(), identifier.getId(), workIdentifier.getId(), name.getId());
+            
+            return Response.status(Status.CREATED).header("Access-Control-Allow-Origin", "*").build();
         }
-        return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+        else {
+            return Response.status(Status.NO_CONTENT).header("Access-Control-Allow-Origin", "*").build();
+        }
     }
 
     @DELETE
@@ -124,5 +134,21 @@ public class ClaimResource {
             }
         }
         throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    @GET
+    public Response get(@PathParam("personId") String personId, @QueryParam("wid") String work_identifier) {
+        ResolvedClaim claim = claimDao.findByPersonIdAndWorkIdentifier(personId, work_identifier);
+        if (claim != null) {
+            return Response.ok(claim).header("Access-Control-Allow-Origin", "*").build();
+        }
+        
+        throw new WebApplicationException(Response.status(Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").build());
+        // return Response.status(Status.NOT_FOUND).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @OPTIONS
+    public Response option(@PathParam("personId") String personId) {
+        return Response.ok().header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept").header("Access-Control-Allow-Methods", "PUT, DELETE, OPTIONS").build();
     }
 }
