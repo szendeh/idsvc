@@ -53,7 +53,7 @@ public class WorkResource {
         // return graph if work exists
         Work work = workDao.findById(workId);
         if (work != null) {
-            // look up associated authors, work_identifiers, and names
+            // look up associated authors, workIdentifiers, and names
             return new WorkGraph(work, authorsOf(workId),
                                  workIdentifierDao.identifiersFor(workId), claimDao.namesIn(workId));
         }
@@ -63,10 +63,10 @@ public class WorkResource {
     @GET @Path("ref/{schema}")
     public WorkGraph getWorkByRef(@PathParam("schema") String schema, @QueryParam("ref") String ref) {
         // return graph if work exists
-        Work work = workDao.findByRef(schema, ref);
+        Work work = workDao.findByIdentifier(schema, ref);
         if (work != null) {
             int workId = work.getId();
-            // look up associated authors, work_identifiers, and names
+            // look up associated authors, workIdentifiers, and names
             return new WorkGraph(work, authorsOf(workId),
                                  workIdentifierDao.identifiersFor(workId), claimDao.namesIn(workId));
         }

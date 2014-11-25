@@ -26,9 +26,9 @@ public interface WorkDAO {
     @Mapper(WorkMapper.class)
     Work findById(@Bind("id") int id);
 
-    @SqlQuery("select work.* from work, wident where work.id = wident.work_id and wident.schema = :schema and wident.identifier = :ref")
+    @SqlQuery("select work.* from work, wident where work.id = wident.work_id and wident.schema = :schema and wident.identifier = :workIdentifier")
     @Mapper(WorkMapper.class)
-    Work findByRef(@Bind("schema") String schema, @Bind("ref") String ref);
+    Work findByIdentifier(@Bind("schema") String schema, @Bind("workIdentifier") String workIdentifier);
 
     @SqlUpdate("insert into work (created) values (:created)")
     @GetGeneratedKeys

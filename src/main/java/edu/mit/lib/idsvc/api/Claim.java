@@ -17,37 +17,37 @@ public class Claim {
     private String identifier;
     private String name;
     private String source;
-    private String work_identifier;
-    private String work_schema;
+    private String workIdentifier;
+    private String workSchema;
 
     public Claim() {}
 
-    public Claim(String identifier, String name, String source, String work_identifier, String work_schema) {
+    public Claim(String identifier, String name, String source, String workIdentifier, String workSchema) {
         this.identifier = identifier;
         this.name = name;
         this.source = source;
-        this.work_identifier = work_identifier;
-        this.work_schema = work_schema;
+        this.workIdentifier = workIdentifier;
+        this.workSchema = workSchema;
     }
 
     @JsonProperty
-    public String getWork_identifier() {
-        return work_identifier;
+    public String getWorkIdentifier() {
+        return workIdentifier;
     }
 
     @JsonProperty
-    public void setWork_identifier(String work_identifier) {
-        this.work_identifier = work_identifier;
+    public void setWorkIdentifier(String workIdentifier) {
+        this.workIdentifier = workIdentifier;
     }
 
     @JsonProperty
-    public String getWork_schema() {
-        return work_schema;
+    public String getWorkSchema() {
+        return workSchema;
     }
 
     @JsonProperty
-    public void setWork_schema(String work_schema) {
-        this.work_schema = work_schema;
+    public void setWorkSchema(String workSchema) {
+        this.workSchema = workSchema;
     }
 
     @JsonProperty

@@ -77,10 +77,10 @@ public class ClaimResource {
             identifier = identifierDao.findById(identId);
         }
         // only WorkIdentifier we accept is cnri for now
-        WorkIdentifier workIdentifier = workIdentifierDao.findByIdentifier("cnri", claim.getWork_identifier());
+        WorkIdentifier workIdentifier = workIdentifierDao.findByIdentifier("cnri", claim.getWorkIdentifier());
         if (workIdentifier == null) {
             int workId = workDao.create(timestamp);
-            int workIdentifierId = workIdentifierDao.create(workId, "cnri", claim.getWork_identifier());
+            int workIdentifierId = workIdentifierDao.create(workId, "cnri", claim.getWorkIdentifier());
             workIdentifier = workIdentifierDao.findById(workIdentifierId);
         }
         // OK - determine whether a claim already has been make
@@ -107,28 +107,39 @@ public class ClaimResource {
         Identifier identifier = identifierDao.findByIdentifier("mitid", personId);
         if (identifier != null) {
             // likewise, default work id to CNRI handle
-            Work work = workDao.findByRef("cnri", wid);
-            if (work != null) {
-                ResolvedClaim claim = claimDao.findByRefs(identifier.getId(), work.getId());
+            WorkIdentifier workIdentifier = workIdentifierDao.findByIdentifier("cnri", wid);
+            if (workIdentifier != null) {
+                ResolvedClaim claim = claimDao.findByRefs(identifier.getId(), workIdentifier.getId());
                 if (claim != null) {
                     claimDao.remove(claim.getId());
+
                     // now determine whether person, work or name is bereft of claims, if so remove them
-                    int numClaims = 0;
+
+                    // person
+                    int numClaimsBy = 0;
                     for (Identifier pid : identifierDao.identifiersFor(identifier.getPersonId())) {
-                        numClaims += claimDao.numClaimsBy(pid.getId());
+                        numClaimsBy += claimDao.numClaimsBy(pid.getId());
                     }
-                    if (numClaims == 0) {
+                    if (numClaimsBy == 0) {
                         identifierDao.removeIdentifiersOf(identifier.getPersonId());
                         personDao.remove(identifier.getPersonId());
                     }
+
                     // work
-                    if (claimDao.numClaimsOn(work.getId()) == 0) {
-                        workDao.remove(work.getId());
+                    int numClaimsOn = 0;
+                    for (WorkIdentifier workIdentifierTmp : workIdentifierDao.identifiersFor(workIdentifier.getWorkId())) {
+                        numClaimsOn += claimDao.numClaimsOn(workIdentifierTmp.getId());
                     }
+                    if (numClaimsOn == 0) {
+                        workIdentifierDao.removeIdentifiersOf(workIdentifier.getWorkId());
+                        workDao.remove(workIdentifier.getWorkId());
+                    }
+
                     // name
                     if (claimDao.numClaimsNaming(claim.getPnameId()) == 0) {
                         nameDao.remove(claim.getPnameId());
                     }
+
                     return Response.ok().header("Access-Control-Allow-Origin", "*").build();
                 }
             }
@@ -137,8 +148,8 @@ public class ClaimResource {
     }
 
     @GET
-    public Response get(@PathParam("personId") String personId, @QueryParam("wid") String work_identifier) {
-        ResolvedClaim claim = claimDao.findByPersonIdAndWorkIdentifier(personId, work_identifier);
+    public Response get(@PathParam("personId") String personId, @QueryParam("wid") String workIdentifier) {
+        ResolvedClaim claim = claimDao.findByPersonIdAndWorkIdentifier(personId, workIdentifier);
         if (claim != null) {
             return Response.ok(claim).header("Access-Control-Allow-Origin", "*").build();
         }

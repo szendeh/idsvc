@@ -31,16 +31,16 @@ public interface ClaimDAO {
     @Mapper(ClaimMapper.class)
     ResolvedClaim findById(@Bind("id") int id);
 
-    @SqlQuery("select * from claim where pident_id = :pid and wident_id = :wid")
+    @SqlQuery("select * from claim where pident_id = :identifierId and wident_id = :workIdentifierId")
     @Mapper(ClaimMapper.class)
-    ResolvedClaim findByRefs(@Bind("pid") int pid, @Bind("wid") int wid);
+    ResolvedClaim findByRefs(@Bind("identifierId") int identifierId, @Bind("workIdentifierId") int workIdentifierId);
 
     /* NOTE this assumes only using mitid schema
      * will need to revise to work with different schemas
      */
-    @SqlQuery("SELECT claim.* FROM claim, pident, wident  WHERE claim.pident_id=pident.id AND pident.identifier=:personId AND claim.wident_id=wident.id AND wident.identifier=:work_identifier")
+    @SqlQuery("SELECT claim.* FROM claim, pident, wident  WHERE claim.pident_id=pident.id AND pident.identifier=:personId AND claim.wident_id=wident.id AND wident.identifier=:workIdentifier")
     @Mapper(ClaimMapper.class)
-    ResolvedClaim findByPersonIdAndWorkIdentifier(@Bind("personId") String personId, @Bind("work_identifier") String work_identifier);
+    ResolvedClaim findByPersonIdAndWorkIdentifier(@Bind("personId") String personId, @Bind("workIdentifier") String workIdentifier);
 
     @SqlUpdate("insert into claim (created, source, pident_id, wident_id, pname_id) values (:created, :source, :pid, :wident_id, :nid)")
     @GetGeneratedKeys
@@ -81,9 +81,9 @@ public interface ClaimDAO {
     @Mapper(CountMapper.class)
     Integer numClaimsBy(@Bind("pid") int pid);
 
-    @SqlQuery("select count(work_id) as count from claim where work_id = :wid")
+    @SqlQuery("select count(wident_id) as count from claim where wident_id = :workIdentifierId")
     @Mapper(CountMapper.class)
-    Integer numClaimsOn(@Bind("wid") int wid);
+    Integer numClaimsOn(@Bind("workIdentifierId") int workIdentifierId);
 
     @SqlQuery("select count(pname_id) as count from claim where pname_id = :nid")
     @Mapper(CountMapper.class)
