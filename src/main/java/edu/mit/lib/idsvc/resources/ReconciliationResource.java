@@ -3,6 +3,7 @@ package edu.mit.lib.idsvc.resources;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 import edu.mit.lib.idsvc.api.Identifier;
 import edu.mit.lib.idsvc.api.Name;
@@ -22,7 +23,7 @@ import java.util.*;
  * @author richardrodgers
  */
 @Path("/reconcile")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({"application/javascript"})
 public class ReconciliationResource {
 
     private final NameDAO nameDao;
@@ -37,10 +38,10 @@ public class ReconciliationResource {
 
     // reconciles personal names
     @GET @Path("name")
-    public Response reconcileName(@QueryParam("queries") String jsonParam) {
+    public Response reconcileName(@QueryParam("callback") String callback, @QueryParam("queries") String jsonParam) {
         if (jsonParam == null) {
             // no queries parameter - just return service metadata
-            return Response.ok().entity(new ReconMetadata()).build();
+            return Response.ok().entity(new JSONPObject(callback, new ReconMetadata())).build();
         }
         try {
             Map<String, ReconQuery> querySet = queryMapper.readValue(jsonParam, new TypeReference<Map<String, ReconQuery>>() {} );
