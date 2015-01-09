@@ -202,6 +202,7 @@ public class ReconciliationResource {
         private String id;
         private String name;
         private double score;
+        private List<String> type = new ArrayList<>();
 
 
         public ReconResult(boolean match, String id, String name, double score) {
@@ -209,6 +210,7 @@ public class ReconciliationResource {
             this.id = id;
             this.name = name;
             this.score = score;
+            this.type.add("name");
         }
 
         @JsonProperty
@@ -229,6 +231,11 @@ public class ReconciliationResource {
         @JsonProperty
         public double getScore() {
             return score;
+        }
+
+        @JsonProperty
+        public List getType() {
+            return type;
         }
     }
 
