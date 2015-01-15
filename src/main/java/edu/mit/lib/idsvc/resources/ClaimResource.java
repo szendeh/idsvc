@@ -140,7 +140,7 @@ public class ClaimResource {
                         nameDao.remove(claim.getPnameId());
                     }
 
-                    return Response.ok().header("Access-Control-Allow-Origin", "*").build();
+                    return Response.ok("{}").header("Access-Control-Allow-Origin", "*").build();
                 }
             }
         }

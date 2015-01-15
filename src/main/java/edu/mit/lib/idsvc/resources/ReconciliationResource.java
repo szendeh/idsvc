@@ -106,7 +106,7 @@ public class ReconciliationResource {
                 
                 if (name != null) {
                     // score the matches: score is just number of authored works
-                    for (Identifier authId : claimDao.authorsNamed(name.getId())) {
+                    for (Identifier authId : claimDao.distinctAuthorsNamed(name.getId())) {
                         results.add(new ReconResult(true, authId.getIdentifier(), name.getName(), (double)claimDao.numClaimsBy(authId.getId())));
                     }
                 }

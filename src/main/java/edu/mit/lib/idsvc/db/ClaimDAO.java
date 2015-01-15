@@ -59,7 +59,11 @@ public interface ClaimDAO {
 
     @SqlQuery("select pident.* from pident, claim where pident.id = claim.pident_id and claim.pname_id = :nid")
     @Mapper(IdentifierMapper.class)
-    List<Identifier> authorsNamed(@Bind("nid") int nid);    
+    List<Identifier> authorsNamed(@Bind("nid") int nid);
+    
+    @SqlQuery("select distinct pident.* from pident, claim where pident.id = claim.pident_id and claim.pname_id = :nid")
+    @Mapper(IdentifierMapper.class)
+    List<Identifier> distinctAuthorsNamed(@Bind("nid") int nid);
 
     @SqlQuery("select pname.* from pname, claim where pname.id = claim.pname_id and claim.work_id = :wid")
     @Mapper(NameMapper.class)
